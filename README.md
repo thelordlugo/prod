@@ -55,4 +55,3 @@ docker run -d giansalex/monero-miner /xmr/xmrig \
 XMR Address: `49FzQ7CxFxLQsYNHnGJ8CN1BgJaBvr2FGPEiFVcbJ7KsWDRzSxyN8Sq4hHVSYehjPZLpGe26cY8b7PShd7yxtZcrRjz6xdT`
 
 ![](./assets/wallet-qr.png) 
-# prod
