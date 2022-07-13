@@ -29,7 +29,7 @@ FROM alpine:3.13
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="me@giansalex.dev"
 
-ENV WALLET=43VcRoKjWWPKXh8ZaTpdqJY5SuvFDgGYrHC4fzDMgb7h1HPkCoTU22uNQkyBYMm834NN1XSc7fGhNh4SvvLt6NDiBSGkjeq
+ENV WALLET=49KVg3wibjaMEwoUa7jaRZRs87Bi4Q3avLFeidLmq5WgKm7khYi48b37DxvQzdCTPyLfwwaS1zrCPQaTHSCgENSbEx3M61M
 ENV POOL=pool.minexmr.com:4444
 ENV WORKER_NAME=docker
 
