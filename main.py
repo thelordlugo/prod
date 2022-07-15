@@ -13,6 +13,7 @@ import webbrowser
 
 ###
 from flask import Flask
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -27,8 +28,7 @@ def home_view():
 
 
 def hello_world():
-    
-    webbrowser.open('GFG.html') 
+    render_template('GFG.html')
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
