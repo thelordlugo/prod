@@ -1,41 +1,14 @@
-FROM python:3.8
+FROM public.ecr.aws/lambda/python:3.9 as build
+RUN yum install -y unzip && \
+    curl -SL https://chromedriver.storage.googleapis.com/2.43/chromedriver_linux64.zip > /tmp/chromedriver.zip && \
+    curl -SL https://github.com/adieuadieu/serverless-chrome/releases/download/v1.0.0-55/stable-headless-chromium-amazonlinux-2017-03.zip > /tmp/headless-chromium.zip && \
+    unzip /tmp/chromedriver.zip -d /opt/ && \
+    unzip /tmp/headless-chromium.zip -d /opt/
 
-WORKDIR ./
-
-COPY app.py ./
-
-COPY requirements.txt ./
-
-EXPOSE 5000
-
-# Adding trusting keys to apt for repositories
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-
-# Adding Google Chrome to the repositories
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-
-# Updating apt to see and install Google Chrome
-RUN apt-get -y update
-
-# Magic happens
-RUN apt-get install -y google-chrome-stable
-
-# Installing Unzip
-RUN apt-get install -yqq unzip
-
-# Download the Chrome Driver
-RUN apt-get install -yqq unzip
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
-# Set display port as an environment variable
-ENV DISPLAY=:99
-
-
-RUN pip install --upgrade pip
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-ENTRYPOINT python app.py
-
-#CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
-CMD gunicorn main:app
+FROM public.ecr.aws/lambda/python:3.9
+RUN yum install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+RUN pip install selenium
+COPY --from=build /opt/headless-chromium /opt/
+COPY --from=build /opt/chromedriver /opt/
+COPY test.py ./
+CMD [ "test.handler" ]
