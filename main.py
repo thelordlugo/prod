@@ -21,14 +21,13 @@ app = Flask(__name__)
 @app.route("/")
 
 def home_view():
-        yield "<h1>Welcome to Geeks for Geeks</h1>"
-        #return hello_world()
+        return hello_world()
 
 
 
 
 def hello_world():
-    render_template('./GFG.html')
+    render_template('GFG.html')
     print("loaded templete")
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
@@ -90078,7 +90077,3 @@ def hello_world():
 
 
 
-if __name__ == "__main__":
-    #hello_world()
- #   app.debug = True
-    app.run()
