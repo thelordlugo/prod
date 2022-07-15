@@ -28,6 +28,7 @@ def home_view():
 
 def hello_world():
     
+    "<h1>Welcome to Geeks for Geeks</h1>"
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -90076,7 +90077,7 @@ def hello_world():
 
 
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
     #hello_world()
  #   app.debug = True
-  #  app.run()
+    app.run()
