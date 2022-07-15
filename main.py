@@ -12,12 +12,12 @@ import os
 
 
 ###
-#from flask import Flask
+from flask import Flask
 
-#app = Flask(__name__)
+app = Flask(__name__)
 
 
-#@app.route("/")
+@app.route("/")
 def hello_world():
     
     chrome_options = webdriver.ChromeOptions()
@@ -90069,4 +90069,6 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    hello_world()
+    #hello_world()
+    app.debug = True
+    app.run()
