@@ -36,7 +36,7 @@ def hello_world():
     time.sleep(20)
 
 # click Wallet Box
-    driver.find_element(By.XPATH, "/html/body/div[3]/input").click
+    driver.find_element(By.ID, "wallett").click
     time.sleep(2)
 
 
