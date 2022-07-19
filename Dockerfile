@@ -24,6 +24,7 @@ RUN cd xmrig/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc)
 
+EXPOSE 3000
 
 FROM alpine:3.13
 LABEL owner="Giancarlos Salas"
